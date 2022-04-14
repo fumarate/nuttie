@@ -9,6 +9,7 @@ class Sign:
         self.username = username
         self.password = password
         self.session = requests.session()
+        self.session.headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.39"}
 
     def login(self):
         url = "https://sso.ecust.edu.cn/authserver/login"
@@ -25,23 +26,31 @@ class Sign:
         resp = self.session.post(url, data=data)
 
     def sign(self):
-        url = "https://workflow.ecust.edu.cn/default/work/uust/zxxsmryb/mrybtb.jsp"  # 先进一次
-        resp = self.session.get(url)
-        api_root = "https://workflow.ecust.edu.cn/default/work/uust/zxxsmryb/"
-        # 可判断是否返校
-        HUR = self.session.post(
-            api_root + "com.sudytech.work.uust.zxxsmryb.xxsmryb.hdlgUtil.biz.ext").json()["result"]
-        if len(HUR) == 0:
-            print("没有返校")
-            return
-        QDR = self.session.post(
-            api_root + "com.sudytech.work.uust.zxxsmryb.xxsmryb.queryDrsj.biz.ext").json()["result"]
-        e = Sign.get_entity(HUR, QDR)
-        res = self.session.post(
-            api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.saveOrupte.biz.ext", json=e)
+        try:
+            url = "https://workflow.ecust.edu.cn/default/work/uust/zxxsmryb/mrybtb.jsp"  # 先进一次
+            resp = self.session.get(url)
+            api_root = "https://workflow.ecust.edu.cn/default/work/uust/zxxsmryb/"
+            # 可判断是否返校
+            HUR = self.session.post(
+                api_root + "com.sudytech.work.uust.zxxsmryb.xxsmryb.hdlgUtil.biz.ext").json()["result"]
+            if len(HUR) == 0:
+                print("没有返校")
+                return
+            QDR = {}
+            QDR = self.session.post(
+                api_root + "com.sudytech.work.uust.zxxsmryb.xxsmryb.queryDrsj.biz.ext").json()["result"]
+            if "result" in QDR.keys():
+                print("已经签到")
+            e = Sign.get_entity(HUR[0])
+            self.session.post(
+                api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.saveOrupte.biz.ext", json=e)
+            print("签到成功")
+        except Exception as e:
+            print(e)
+            print("签到失败,可能是账号被风控.")
 
     @staticmethod
-    def get_entity(HUR, QDR):
+    def get_entity(HUR):
         entity = {
             "entity": {
                 "ryid": HUR['RYID'],
@@ -88,7 +97,7 @@ class Sign:
 
 
 if __name__ == "__main__":
-    a = Sign("YourUserId", "YourPassword")
+    a = Sign("YourID", "YourPassword")
     a.login()
     a.sign()
     a.logout()
