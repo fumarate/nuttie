@@ -1,0 +1,6 @@
+<div>
+    {% for msg in msg_list %}
+    <span>{% if msg.status %}✅{% else %}❗{% endif %}{{msg.username}}{{msg.message}}<br/></span>
+    {% endfor %}
+    <img src = 'https://s3.bmp.ovh/imgs/2022/03/30/5da1fb3b32061ee7.jpg' />
+</div>
