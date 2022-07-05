@@ -1,0 +1,40 @@
+{
+    "public": {
+      "sender": {
+        "address": "YourSenderAddress",
+        "password": "YourSenderPassword",
+        "host": "YourSenderHost",
+        "port": "YourSenderPort(int)",
+        "ssl": "IfSendWithSSL(bool)"
+      },
+      "report": [
+        {
+          "method": "mail",
+          "mail": "YourMail"
+        }
+      ],
+      "overwrite_items": {
+        "swjkzk": "健康",
+        "xcm": "是",
+        "jkmsflm": "是",
+        "twsfzc": "是",
+        "sfycxxwc": "否"
+      }
+    },
+    "users": [
+      {
+        "username": "YourAccount",
+        "password": "YourPassword",
+        "overwrite_items": {
+          "xrywz": "YourPosition"
+        },
+        "report": [
+          {
+            "method": "mail",
+            "mail": "YourMail"
+          }
+        ]
+      }
+    ]
+  }
+  
