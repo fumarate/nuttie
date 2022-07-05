@@ -8,7 +8,7 @@ from reporter import Reporter
 
 
 class Client:
-    def __init__(self, username:str, password:str, overwrite_items: dict = {}):
+    def __init__(self, username: str, password: str, overwrite_items: dict = {}):
         """构造函数
 
         Args:
@@ -67,8 +67,11 @@ class Client:
                     "message": "该账号无法打卡,请手动检查!"
                 }
             if not self.queryDrsj():
-                self.session.post(
-                    api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.saveOrupte.biz.ext", json=self.entity)
+                result = self.session.post(
+                    api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.saveOrupte.biz.ext",
+                    json={
+                        "entity": self.entity})
+
                 return{
                     "status": True,
                     "message": '打卡成功!'
@@ -98,27 +101,44 @@ class Client:
         resp = self.session.post(
             self.api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.hdlgUtil.biz.ext").json()
         list = resp['result']
+        flag = False
         if list is not None and len(list) > 0:
+            flag = True
             if 'SS' in list[0] and list[0]['SS'] not in [None, '']:
                 SS = list[0]['SS']
                 list[0]['xq'] = SS.split("-")[0]
-                list[0]['ss'] = SS.split("-")[1]
                 list[0]['mph'] = SS.split("-")[2]
                 list[0].pop('SS')
-                self.entity = list[0]
+                for key, value in list[0].items():
+                    self.entity[key.lower()] = value
+                self.entity.pop('bjdm')
+                self.entity.pop('xyid')
+                self.entity.pop('zy')
+                self.entity.pop('zydm')
+                self.entity.update({
+                    "jkmtp": "",
+                    "xcmtp": "",
+                    "hsjcbgtp": "",
+                    "swdqtw": "",
+                    "swbz": "",
+                    "tUustMrybhdgjs": "[]",
+                    "_ext": "{\"jkmtp\":{\"type\":\"fileUpload\",\"value\":[],\"nameStyle\":\"\"},\"xcmtp\":{\"type\":\"fileUpload\",\"value\":[],\"nameStyle\":\"\"},\"hsjcbgtp\":{\"type\":\"fileUpload\",\"value\":[],\"nameStyle\":\"\"}}",
+                    "tjsj": time.strftime("%Y-%m-%d %H:%M"),
+                    "tjrq": time.strftime("%Y-%m-%d"),
+                    "zb": "[]",
+                    "__type": "sdo:com.sudytech.work.uust.zxxsmryb.zxxsmryb.TUustZxxsmryb"
+                }
+                )
                 self.entity.update(self.overwrite_items)
-                return True
-        return False
+        return flag
 
     def queryDrsj(self):
         """
-        Check if the user has Cliented.
+        Check if the user has signed.
         """
         resp = self.session.post(
             self.api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.queryDrsj.biz.ext").json()
-        if 'list' in resp['result'] and resp.json()['result']['list'] != {}:
-            return False
-        return True
+        return resp['result'] != {}
 
     def needCaptcha(self):
         resp = self.session.get(
@@ -128,11 +148,14 @@ class Client:
     def run(self):
         msg = self.login()
         if not msg['status']:
+            msg['username'] = self.username
             return msg
         msg = self.sign()
         print(msg['message'])
         self.logout()
+        msg['username'] = self.username
         return msg
+
 
 if __name__ == "__main__":
     reporter = Reporter()
@@ -145,11 +168,10 @@ if __name__ == "__main__":
             client = Client(user['username'],
                             user['password'], user['overwrite_items'])
             result_msg = client.run()
-            result_msg['username'] = user['username']
             msgs.append(result_msg)
             for report in user['report']:
                 if report['method'] == 'mail':
-                    Reporter.send_mail(
+                    reporter.send_mail(
                         config_public['sender'], result_msg['username']+result_msg['message'], report['mail'])
         for report in config_public['report']:
             if report['method'] == 'mail':
