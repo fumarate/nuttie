@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import time
-import json
+import json5
 
 from reporter import Reporter
 
@@ -159,8 +159,8 @@ class Client:
 
 if __name__ == "__main__":
     reporter = Reporter()
-    with open("config.json", mode="r+", encoding='utf-8') as config_file:
-        config_json = json.load(config_file)
+    with open("config.json5", mode="r+", encoding='utf-8') as config_file:
+        config_json = json5.load(config_file)
         config_public = config_json['public']
         msgs = []
         for user in config_json['users']:
@@ -169,10 +169,10 @@ if __name__ == "__main__":
                             user['password'], user['overwrite_items'])
             result_msg = client.run()
             msgs.append(result_msg)
-            for report in user['report']:
+            """for report in user['report']:
                 if report['method'] == 'mail':
                     reporter.send_mail(
-                        config_public['sender'], result_msg['username']+result_msg['message'], report['mail'])
+                        config_public['sender'], result_msg['username']+result_msg['message'], report['mail'])"""
         for report in config_public['report']:
             if report['method'] == 'mail':
                 reporter.send_mail(
