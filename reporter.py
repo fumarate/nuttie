@@ -1,5 +1,6 @@
 from typing import Dict, List
 from jinja2 import Template
+import time
 MD = 'md'
 HTML = 'html'
 
@@ -32,4 +33,5 @@ class Reporter:
                 template = Template(template_file.read().replace('\n',''))
         except FileNotFoundError as e:
             print("retypr your type")
-        return template.render(msg_list=msg_list)
+        return template.render(msg_list=msg_list,title = time.strftime("%Y/%m/%d %H:%M:%S"))
+

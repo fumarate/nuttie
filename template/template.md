@@ -1,4 +1,4 @@
-# 健康打卡状态通报
+# {{ title }}
 {% for msg in msg_list %}
 {% if msg.status %}✅{% else %}❗{% endif %}{{msg.username}}{{msg.message}}
 {% endfor %}
