@@ -132,3 +132,6 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
+
+# local test config file
+config.json5

@@ -25,7 +25,12 @@ class Client:
         self.entity = {}
         self.overwrite_items = overwrite_items
 
-    def login(self):
+    def login(self)->dict:
+        """登陆以获取cookie等信息
+
+        Returns:
+            dict: 登陆状态信息
+        """
         print(self.username+"开始登录")
         url = "https://sso.ecust.edu.cn/authserver/login"
         resp = self.session.get(url, allow_redirects=False)
@@ -51,10 +56,10 @@ class Client:
         }
 
     def sign(self) -> dict:
-        """Client
+        """打卡主函数
 
         Returns:
-            dict: a dict which contains the information about this Clienting
+            dict: 返回打卡状态信息
         """
         print(self.username+"开始打卡")
         try:
@@ -93,10 +98,10 @@ class Client:
         self.session.get(url)
 
     def queryXsfxry(self) -> bool:
-        """_summary_
+        """获取用户信息并判断是否可以打卡
 
         Returns:
-            bool: if the user is allowed to Client
+            bool: 是否可以打卡
         """
         resp = self.session.post(
             self.api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.hdlgUtil.biz.ext").json()
@@ -105,12 +110,11 @@ class Client:
         if list is not None and len(list) > 0:
             flag = True
             if 'SS' in list[0] and list[0]['SS'] not in [None, '']:
-                SS = list[0]['SS']
-                list[0]['xq'] = SS.split("-")[0]
-                list[0]['mph'] = SS.split("-")[2]
-                list[0].pop('SS')
                 for key, value in list[0].items():
                     self.entity[key.lower()] = value
+                self.entity['xq'] = (SS:=list[0]['SS'].split('-'))[0]
+                self.entity['ss'] = SS[1]
+                self.entity['mph'] = SS[2]
                 self.entity.pop('bjdm')
                 self.entity.pop('xyid')
                 self.entity.pop('zy')
@@ -130,11 +134,15 @@ class Client:
                 }
                 )
                 self.entity.update(self.overwrite_items)
+                print(self.entity)
         return flag
 
-    def queryDrsj(self):
+    def queryDrsj(self)->bool:
         """
-        Check if the user has signed.
+        查看今日是否有打卡记录
+        
+        Returns:
+            bool: 是否有今日的打卡记录
         """
         resp = self.session.post(
             self.api_root+"com.sudytech.work.uust.zxxsmryb.xxsmryb.queryDrsj.biz.ext").json()
@@ -145,7 +153,12 @@ class Client:
             "https://sso.ecust.edu.cn/authserver/needCaptcha.html?username=%s&_=%d" % (self.username, time.time()))
         return 'true' in resp.text
 
-    def run(self):
+    def run(self)->dict:
+        """运行函数
+
+        Returns:
+            dict: 打卡状态信息
+        """
         msg = self.login()
         if not msg['status']:
             msg['username'] = self.username
