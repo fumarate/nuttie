@@ -25,7 +25,7 @@ class Client:
         self.entity = {}
         self.overwrite_items = overwrite_items
 
-    def login(self)->dict:
+    def login(self) -> dict:
         """登陆以获取cookie等信息
 
         Returns:
@@ -99,6 +99,7 @@ class Client:
 
     def queryXsfxry(self) -> bool:
         """获取用户信息并判断是否可以打卡
+        由原前端js代码改写
 
         Returns:
             bool: 是否可以打卡
@@ -112,7 +113,7 @@ class Client:
             if 'SS' in list[0] and list[0]['SS'] not in [None, '']:
                 for key, value in list[0].items():
                     self.entity[key.lower()] = value
-                self.entity['xq'] = (SS:=list[0]['SS'].split('-'))[0]
+                self.entity['xq'] = (SS := list[0]['SS'].split('-'))[0]
                 self.entity['ss'] = SS[1]
                 self.entity['mph'] = SS[2]
                 self.entity.pop('bjdm')
@@ -137,10 +138,11 @@ class Client:
                 print(self.entity)
         return flag
 
-    def queryDrsj(self)->bool:
+    def queryDrsj(self) -> bool:
         """
         查看今日是否有打卡记录
-        
+        由原前端js代码改写
+
         Returns:
             bool: 是否有今日的打卡记录
         """
@@ -153,7 +155,7 @@ class Client:
             "https://sso.ecust.edu.cn/authserver/needCaptcha.html?username=%s&_=%d" % (self.username, time.time()))
         return 'true' in resp.text
 
-    def run(self)->dict:
+    def run(self) -> dict:
         """运行函数
 
         Returns:
@@ -175,18 +177,14 @@ if __name__ == "__main__":
     with open("config.json5", mode="r+", encoding='utf-8') as config_file:
         config_json = json5.load(config_file)
         config_public = config_json['public']
-        msgs = []
+        msg_list = []
         for user in config_json['users']:
             user['overwrite_items'].update(config_public['overwrite_items'])
             client = Client(user['username'],
                             user['password'], user['overwrite_items'])
             result_msg = client.run()
-            msgs.append(result_msg)
-            """for report in user['report']:
-                if report['method'] == 'mail':
-                    reporter.send_mail(
-                        config_public['sender'], result_msg['username']+result_msg['message'], report['mail'])"""
-        for report in config_public['report']:
-            if report['method'] == 'mail':
-                reporter.send_mail(
-                    config_public['sender'], msgs, report['mail'])
+            msg_list.append(result_msg)
+            reporter.send_mail(
+                config_public['sender'], [result_msg], user['mail'])
+        reporter.send_mail(
+            config_public['sender'], msg_list, config_public['mail'])
