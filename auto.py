@@ -170,10 +170,10 @@ class Client:
 
 
 if __name__ == "__main__":
-    reporter = Reporter()
     with open("config.json5", mode="r+", encoding='utf-8') as config_file:
         config_json = json5.load(config_file)
         config_public = config_json['public']
+        reporter = Reporter(config_public['report'])
         msg_list = []
         for user in config_json['users']:
             user['overwrite_items'].update(config_public['overwrite_items'])
@@ -181,7 +181,5 @@ if __name__ == "__main__":
                             user['password'], user['overwrite_items'])
             result_msg = client.run()
             msg_list.append(result_msg)
-            reporter.send_mail(
-                config_public['sender'], [result_msg], user['mail'])
-        reporter.send_mail(
-            config_public['sender'], msg_list, config_public['mail'])
+            reporter.report(user['mail'], result_msg)
+        reporter.report_admin(msg_list)

@@ -1,40 +1,36 @@
 {
-    "public": {
-      "sender": {
-        "address": "example@company.com",//通知发送方邮件地址
-        "password": "examplepswd",//通知发送方邮件密码
-        "host": "smtp.company.com",//邮件服务Host
-        "port": 25,//邮件服务端口
-        "ssl": false//是否使用SSL发送通知
+  public: {
+    report: {
+      sender: {
+        address: "example@company.com", //通知发送方邮件地址
+        password: "examplepswd", //通知发送方邮件密码
+        host: "smtp.company.com", //邮件服务Host
+        port: 25, //邮件服务端口
+        ssl: false, //是否使用SSL发送通知
       },
-      "report": [
-        {
-          "method": "mail",//通知发送方式，暂时只支持mail
-          "mail": "user@company.com"//公共通知接收邮件地址
-        }
-      ],
-      "overwrite_items": {
-        "swjkzk": "健康",//上午健康状况
-        "xcm": "是",//行程码
-        "jkmsflm": "是",//健康码是否绿码
-        "twsfzc": "是",//体温是否正常
-        "sfycxxwc": "否"//是否有从学校外出
-      }
+      sc_key: "SCT1234567890qwertyuiopasdfghjklz", //ServerChan key
+      dingtalk: {
+        access_token: "1234567890", //钉钉机器人access token
+        secret: "1234567890", //钉钉机器人secret
+      },
+      mail: "user@company.com", //公共通知接收邮件地址
     },
-    "users": [
-      {
-        "username": "19005678",//学号
-        "password": "S12345678",//密码
-        "overwrite_items": {
-          "xrywz": "在上海"//现人员位置，徐汇校区、奉贤校区、在上海、在国内其他地区、在境外（港澳台地区、国外）
-        },
-        "report": [
-          {
-            "method": "mail",//通知发送方式，暂时只支持mail
-            "mail": "19005678@mail.ecust.edu.cn"//接收邮件地址
-          }
-        ]
-      }
-    ]
-  }
-  
+    overwrite_items: {
+      swjkzk: "健康", //上午健康状况
+      xcm: "是", //行程码
+      jkmsflm: "是", //健康码是否绿码
+      twsfzc: "是", //体温是否正常
+      sfycxxwc: "否", //是否有从学校外出
+    },
+  },
+  users: [
+    {
+      username: "19005678", //学号
+      password: "S12345678", //密码
+      overwrite_items: {
+        xrywz: "在上海", //现人员位置，徐汇校区、奉贤校区、在上海、在国内其他地区、在境外（港澳台地区、国外）
+      },
+      mail: "19005678@mail.ecust.edu.cn", //接收邮件地址
+    },
+  ],
+}
