@@ -113,6 +113,8 @@ class Client:
             if 'SS' in list[0] and list[0]['SS'] not in [None, '']:
                 for key, value in list[0].items():
                     self.entity[key.lower()] = value
+                self.entity['mph'] = self.entity['ss'].split('-')[2]
+                self.entity['xq'] = self.entity['ss'].split('-')[0]
                 self.entity.pop('bjdm')
                 self.entity.pop('xyid')
                 self.entity.pop('zy')
