@@ -8,7 +8,7 @@ from reporter import Reporter
 
 
 class Client:
-    def __init__(self, username: str, password: str, overwrite_items: dict = {}):
+    def __init__(self, username: str, password: str, overwrite_items: dict = {},x_forwarded_for =None):
         """构造函数
 
         Args:
@@ -20,7 +20,12 @@ class Client:
         self.password = password
         self.session = requests.session()
         self.session.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.39"}
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.39",
+            }
+        if x_forwarded_for is not None:
+            self.session.headers.update({
+                "X-Forwarded-For":x_forwarded_for
+            })
         self.api_root = "https://workflow.ecust.edu.cn/default/work/uust/zxxsmryb/"
         self.entity = {}
         self.overwrite_items = overwrite_items
@@ -180,7 +185,7 @@ if __name__ == "__main__":
         for user in config_json['users']:
             user['overwrite_items'].update(config_public['overwrite_items'])
             client = Client(user['username'],
-                            user['password'], user['overwrite_items'])
+                            user['password'], user['overwrite_items'],user['x_forwarded_for'])
             result_msg = client.run()
             msg_list.append(result_msg)
             reporter.report(user['mail'], result_msg)
