@@ -1,8 +1,4 @@
-# autosign_python
-
-*谨以此仓库纪念你，我还未熟悉却已离去的朋友*
-
-*Dedicated to you, who has gone before I am familiar with*
+# nuttie
 
 此程序可以帮助你每日健康打卡。与之前的版本相比，此版本采用模拟请求方式，无需再安装一大堆<s>恶臭的</s>依赖了。
 
